@@ -1,0 +1,1413 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'off-white': '#fafaf9',
+                        'soft-gray': '#f5f5f4',
+                        'charcoal': '#3f3f46',
+                        'dark-charcoal': '#27272a',
+                        'accent': '#dc2626'
+                    },
+                    fontFamily: {
+                        'serif': ['Playfair Display', 'serif'],
+                        'sans': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+            --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+            --ease-in-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 50%, #f0f0ef 100%);
+        }
+        
+        .card-gradient {
+            background: linear-gradient(135deg, #fafaf9 0%, #f8f8f7 50%, #f3f3f2 100%);
+        }
+        
+        .section-gradient {
+            background: linear-gradient(135deg, #f8f8f7 0%, #f0f0ef 100%);
+        }
+        
+        .motion-gradient {
+            background: linear-gradient(45deg, #fafaf9, #f5f5f4, #f0f0ef, #f5f5f4);
+            background-size: 300% 300%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s var(--ease-in-out-quart);
+        }
+        
+        .section-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section-reveal-left {
+            opacity: 0;
+            transform: translateX(-40px) translateY(20px);
+            transition: all 1s var(--ease-in-out-quart);
+        }
+        
+        .section-reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0) translateY(0);
+        }
+        
+        .section-reveal-right {
+            opacity: 0;
+            transform: translateX(40px) translateY(20px);
+            transition: all 1s var(--ease-in-out-quart);
+        }
+        
+        .section-reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0) translateY(0);
+        }
+        
+        .card-hover {
+            transition: all 0.6s var(--ease-in-out-expo);
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-12px) scale(1.01) translateZ(0);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.4s var(--ease-in-out-cubic);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transition: width 0.4s var(--ease-in-out-cubic);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .scroll-container {
+            scroll-behavior: smooth;
+        }
+        
+        .noise-texture {
+            position: relative;
+        }
+        
+        .noise-texture::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        
+        .line-animation {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .line-animation::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 0%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #dc2626, transparent);
+            transform: translateY(-50%);
+            animation: lineProgress 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes lineProgress {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+        
+        .parallax-element {
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        /* Restaurant Cards Auto Scroll */
+        .auto-scroll-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .auto-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .auto-scroll-card {
+            scroll-snap-align: start;
+            flex: 0 0 auto;
+            min-width: 300px;
+        }
+        
+        .mobile-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mobile-popup-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        
+        .close-popup {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Mobile specific styles */
+        @media (max-width: 768px) {
+            .auto-scroll-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .auto-scroll-card {
+                min-width: 100%;
+            }
+            
+            .hero-content {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+        }
+        
+        /* Enhanced Motion Classes */
+        .hero-layer {
+            transition: transform 0.1s var(--ease-in-out-quart);
+        }
+        
+        .hero-foreground {
+            transform: translateY(0px) scale(1);
+            transition: transform 1.2s var(--ease-in-out-quart);
+        }
+        
+        .hero-background {
+            transform: scale(1.02);
+            transition: transform 2s var(--ease-in-out-quart);
+        }
+        
+        .hero-content {
+            transform: translateY(0px);
+            transition: transform 0.8s var(--ease-in-out-quart);
+        }
+        
+        .word-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.9s var(--ease-in-out-expo);
+        }
+        
+        .word-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .button-hover {
+            transform: translateZ(0);
+            transition: all 0.4s var(--ease-in-out-expo);
+            will-change: transform;
+        }
+        
+        .button-hover:hover {
+            transform: translateY(-3px) translateZ(0);
+        }
+        
+        .button-hover:active {
+            transform: translateY(0) translateZ(0);
+        }
+        
+        /* Enhanced card hover with 3D tilt effect */
+        .card-hover-3d {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .card-hover-3d:hover {
+            transform: translateY(-12px) scale(1.01) translateZ(20px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Background motion enhancement */
+        .bg-motion {
+            animation: bgDrift 15s ease-in-out infinite alternate;
+        }
+        
+        @keyframes bgDrift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10px, -5px) scale(1.01); }
+        }
+        
+        /* Cinematic Hero Styles */
+        .hero-cinematic {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .hero-background-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 50%, #f0f0ef 100%);
+            background-size: 100% 200%;
+            animation: backgroundScroll 20s linear infinite;
+        }
+        
+        .hero-gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(220, 38, 38, 0.05), rgba(220, 38, 38, 0.02), rgba(220, 38, 38, 0.01));
+            animation: gradientShiftLong 30s ease-in-out infinite;
+        }
+        
+        .hero-noise-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.01'/%3E%3C/svg%3E");
+            animation: slowDrift 20s ease-in-out infinite;
+        }
+        
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+        
+        .hero-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 50%;
+            animation: floatParticle 8s ease-in-out infinite;
+        }
+        
+        .hero-content-layer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 7xl;
+            padding: 0 1.5rem;
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 36px;
+            border: 1px solid rgba(63, 63, 70, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scroll-indicator::after {
+            content: '';
+            width: 4px;
+            height: 8px;
+            background: rgba(63, 63, 70, 0.6);
+            border-radius: 2px;
+            animation: scrollArrow 2s ease-in-out infinite;
+        }
+        
+        .hero-gradient-text {
+            background: linear-gradient(45deg, #dc2626, #7c2d12, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradientText 15s ease infinite;
+        }
+        
+        @keyframes backgroundScroll {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 0% 100%; }
+        }
+        
+        @keyframes gradientShiftLong {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes slowDrift {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(5px, -3px); }
+            50% { transform: translate(-3px, 5px); }
+            75% { transform: translate(3px, -5px); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+            90% { opacity: 0.2; }
+        }
+        
+        @keyframes scrollArrow {
+            0% { transform: translateY(-10px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(10px); opacity: 0; }
+        }
+        
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes scrollReviews {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+            100% {
+                transform: translateX(-50%) translateY(-10px); /* move left and slightly up */
+            }
+        }
+        
+        /* Hero Slider Styles */
+        .hero-slider {
+            position: absolute;
+            height: 520px;
+            width: 288px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slider-track {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* 24px */
+            animation: slideDown 5s linear infinite;
+        }
+        
+        .slider-track:hover {
+            animation-play-state: paused;
+        }
+        
+        @keyframes slideDown {
+            0% {
+                transform: translateY(100);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+        
+        /* Portfolio Continuous Scroll */
+        .portfolio-continuous-scroll {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .portfolio-continuous-scroll .card-hover-3d {
+            flex: 0 0 300px;
+        }
+        
+        .portfolio-track {
+            display: flex;
+            gap: 2rem;
+            animation: scrollRight 30s linear infinite;
+        }
+        
+        .portfolio-track:hover {
+            animation-play-state: paused;
+        }
+        
+        @keyframes scrollRight {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        /* Reviews Section */
+        .reviews-container {
+            display: flex;
+            gap: 1.8rem;
+            padding: 1.5rem 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow: hidden;    /* hide overflow for animation */
+            position: relative;
+        }
+        
+        .reviews-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .review-card {
+            flex: 0 0 180px;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fafaf9, #f5f5f4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #dc2626;
+            margin-right: 0.75rem;
+        }
+        
+        .review-info {
+            flex: 1;
+        }
+        
+        .review-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .review-date {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        
+        .review-stars {
+            color: #fbbf24;
+            margin-bottom: 0.5rem;
+        }
+        
+        .review-text {
+            color: #4b5563;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        /* Track animation wrapper */
+        .reviews-track {
+            display: flex;
+            gap: 1rem;
+            animation: scrollReviews 30s linear infinite; /* slow scroll */
+        }
+    </style>
+</head>
+<body class="bg-off-white text-charcoal">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="font-serif text-2xl font-bold">RESTAURANTS</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-sm font-medium hover:text-accent transition-colors">Home</a>
+                    <a href="menu.html" class="nav-link text-sm font-medium hover:text-accent transition-colors">Menu</a>
+                    <a href="about.html" class="nav-link text-sm font-medium hover:text-accent transition-colors">About Us</a>
+                    <!-- <a href="#reviews" class="nav-link text-sm font-medium hover:text-accent transition-colors">Reviews</a> -->
+                    <a href="contact.html" class="nav-link text-sm font-medium hover:text-accent transition-colors">Contact us</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cinematic Hero Section -->
+    <section id="home" class="hero-cinematic relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Background Layer with scrolling image / placeholder -->
+        <div class="absolute inset-0 hero-background-layer bg-cover bg-center opacity-25"
+            style="background-image: url('https://via.placeholder.com/1600x900');">
+        </div>
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 hero-gradient-overlay bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-zinc-950"></div>
+        <!-- Noise Layer -->
+        <div class="absolute inset-0 hero-noise-layer pointer-events-none"></div>
+        
+        <!-- LEFT SLIDER (Placeholder Cards) -->
+        <div class="absolute left-[-140px] top-1/2 -translate-y-1/2 hidden lg:block hero-slider rotate-[-12deg]">
+            <div class="slider-track space-y-6">
+                <!-- Card 1 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Le Bernardin</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Seafood</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Michelin 3 Stars</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Experience the pinnacle of seafood artistry with innovative techniques and pristine ingredients.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-red-700 transition-colors button-hover">View Details</button> -->
+                </div>
+                <!-- Card 2 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Nobu</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Japanese</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Fine Dining</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Elegant Japanese cuisine with expertly crafted dishes in a serene atmosphere.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-green-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                <!-- Card 3 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Osteria Francescana</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Italian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Michelin 3 Stars</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Innovative Italian cuisine blending tradition with creative flair.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-blue-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Osteria Francescana</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Italian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Michelin 3 Stars</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Innovative Italian cuisine blending tradition with creative flair.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-blue-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Osteria Francescana</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Italian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Michelin 3 Stars</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Innovative Italian cuisine blending tradition with creative flair.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-blue-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Osteria Francescana</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Italian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Michelin 3 Stars</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Innovative Italian cuisine blending tradition with creative flair.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-blue-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- RIGHT SLIDER (Placeholder Cards) -->
+        <div class="absolute right-[-140px] top-1/2 -translate-y-1/2 hidden lg:block hero-slider rotate-[8deg]">
+            <div class="slider-track space-y-6">
+                <!-- Card 1 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Eleven Madison Park</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Contemporary</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Michelin 3 Stars</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Modern fine dining with imaginative tasting menus that delight every sense.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-yellow-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                <!-- Card 2 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">The French Laundry</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">French</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Fine Dining</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Exquisite French cuisine and seasonal tasting menus crafted with perfection.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-purple-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                <!-- Card 3 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Gaggan</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Indian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Progressive</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">A playful, experimental approach to Indian cuisine that excites the palate.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-pink-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                 <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Gaggan</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Indian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Progressive</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">A playful, experimental approach to Indian cuisine that excites the palate.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-pink-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                 <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Gaggan</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Indian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Progressive</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">A playful, experimental approach to Indian cuisine that excites the palate.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-pink-600 transition-colors button-hover">View Details</button> -->
+                </div>
+                 <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <!-- <h3 class="font-serif text-lg font-bold mb-2">Gaggan</h3>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Indian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Progressive</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">A playful, experimental approach to Indian cuisine that excites the palate.</p>
+                    <button class="mt-2 w-full py-2 bg-accent text-white rounded text-sm hover:bg-pink-600 transition-colors button-hover">View Details</button> -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Particles -->
+        <div class="absolute inset-0 hero-particles" id="heroParticles"></div>
+        
+        <!-- CENTER CONTENT -->
+        <div class="relative z-10 text-center max-w-4xl px-6 hero-content-layer">
+            <span class="text-[11px] uppercase tracking-widest border border-white/40 px-4 py-1 rounded-full text-black">
+                Café · Dining · Experience
+            </span>
+            <h1 class="mt-6 text-6xl md:text-8xl serif leading-[0.95] text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-yellow-400">
+                Crafted for<br>
+                <span class="italic">
+                    Taste & Moments
+                </span>
+            </h1>
+            <p class="mt-6 text-black-300 max-w-xl mx-auto font-light leading-relaxed word-reveal" style="transition-delay: 0.2s;">
+               Business Where flavour, elegance and atmosphere meet —
+                designed for conversations, comfort and unforgettable visits.
+            </p>
+            <div class="mt-10 flex gap-4 justify-center">
+                <a href="#reserve" class="px-8 py-3 rounded-full bg-white text-black font-medium hover:scale-105 transition">
+                    Reserve a Table
+                </a>
+                <a href="tel:+254700000000" class="px-8 py-3 rounded-full border border-white/20 hover:bg-white/5 transition">
+                    Call Us
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 w-full flex justify-center">
+            <span class="block w-1 h-8 bg-white rounded-full animate-bounce"></span>
+        </div>
+    </section>
+
+    <!-- Restaurant Cards Auto Scroll Section -->
+    <section id="restaurants" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12 section-reveal">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold mb-4">Dining Experiences</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Immersive experiences at world-renowned establishment</p>
+            </div>
+            
+            <div class="auto-scroll-container section-reveal">
+                <!-- Restaurant Card 1 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4"></div>
+                    <h3 class="font-serif text-xl font-bold mb-2">Le Bernardin</h3>
+                    <!-- <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Seafood</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Michelin 3 Stars</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Experience the pinnacle of seafood artistry with innovative techniques and pristine ingredients</p>
+                    <button class="mt-4 w-full py-2 bg-accent text-white rounded text-sm hover:bg-red-700 transition-colors button-hover" onclick="openPopup('Le Bernardin', 'Seafood, Michelin 3 Stars', 'Experience the pinnacle of seafood artistry with innovative techniques and pristine ingredients')">View Details</button> -->
+                </div>
+                
+                <!-- Restaurant Card 2 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4" style="transition-delay: 0.1s;"></div>
+                    <h3 class="font-serif text-xl font-bold mb-2">Eleven Madison Park</h3>
+                    <!-- <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Vegetarian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">World's 50 Best</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">A revolutionary plant-based journey that redefines contemporary fine dining</p>
+                    <button class="mt-4 w-full py-2 bg-accent text-white rounded text-sm hover:bg-red-700 transition-colors button-hover" onclick="openPopup('Eleven Madison Park', 'Vegetarian, World\'s 50 Best', 'A revolutionary plant-based journey that redefines contemporary fine dining')">View Details</button> -->
+                </div>
+                
+                <!-- Restaurant Card 3 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4" style="transition-delay: 0.2s;"></div>
+                    <h3 class="font-serif text-xl font-bold mb-2">Noma</h3>
+                    <!-- <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Nordic</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">World's 50 Best</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Pioneering Nordic cuisine with foraged ingredients and seasonal storytelling</p>
+                    <button class="mt-4 w-full py-2 bg-accent text-white rounded text-sm hover:bg-red-700 transition-colors button-hover" onclick="openPopup('Noma', 'Nordic, World\'s 50 Best', 'Pioneering Nordic cuisine with foraged ingredients and seasonal storytelling')">View Details</button> -->
+                </div>
+                
+                <!-- Restaurant Card 4 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4" style="transition-delay: 0.3s;"></div>
+                    <h3 class="font-serif text-xl font-bold mb-2">Osteria Francescana</h3>
+                    <!-- <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Italian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">World's 50 Best</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Contemporary Italian cuisine that bridges tradition with avant-garde innovation</p>
+                    <button class="mt-4 w-full py-2 bg-accent text-white rounded text-sm hover:bg-red-700 transition-colors button-hover" onclick="openPopup('Osteria Francescana', 'Italian, World\'s 50 Best', 'Contemporary Italian cuisine that bridges tradition with avant-garde innovation')">View Details</button> -->
+                </div>
+                
+                <!-- Restaurant Card 5 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4" style="transition-delay: 0.4s;"></div>
+                    <h3 class="font-serif text-xl font-bold mb-2">Gaggan Anand</h3>
+                    <!-- <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Indian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">World's 50 Best</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Progressive Indian cuisine with playful techniques and explosive flavors</p>
+                    <button class="mt-4 w-full py-2 bg-accent text-white rounded text-sm hover:bg-red-700 transition-colors button-hover" onclick="openPopup('Gaggan Anand', 'Indian, World\'s 50 Best', 'Progressive Indian cuisine with playful techniques and explosive flavors')">View Details</button> -->
+                </div>
+                
+                <!-- Restaurant Card 6 -->
+                <div class="auto-scroll-card card-hover card-hover-3d bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4" style="transition-delay: 0.5s;"></div>
+                    <h3 class="font-serif text-xl font-bold mb-2">Central</h3>
+                    <!-- <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">Peruvian</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">World's 50 Best</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Journey through Peru's diverse ecosystems with innovative Andean and Amazonian ingredients</p>
+                    <button class="mt-4 w-full py-2 bg-accent text-white rounded text-sm hover:bg-red-700 transition-colors button-hover" onclick="openPopup('Central', 'Peruvian, World\'s 50 Best', 'Journey through Peru\'s diverse ecosystems with innovative Andean and Amazonian ingredients')">View Details</button> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-20 section-gradient noise-texture">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 section-reveal">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold mb-4">Our Cuisines</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Diverse collection of meals and lovely experiences</p>
+            </div>
+            
+            <div class="portfolio-continuous-scroll">
+                <div class="portfolio-track">
+                    <!-- Portfolio Card 1 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Fine Dining</h3>
+                        <p class="text-gray-600 mb-4">Elegant, sophisticated websites for high-end establishments</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 2 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Casual Eats</h3>
+                        <p class="text-gray-600 mb-4">Modern, approachable designs for everyday dining</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 3 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Fast Casual</h3>
+                        <p class="text-gray-600 mb-4">Efficient, mobile-first experiences for quick service</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 4 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Bakery</h3>
+                        <p class="text-gray-600 mb-4">Warm, inviting designs for artisanal bakeries and cafes</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 5 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Bar & Lounge</h3>
+                        <p class="text-gray-600 mb-4">Sophisticated designs for nightlife and cocktail experiences</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 6 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Food Truck</h3>
+                        <p class="text-gray-600 mb-4">Dynamic, mobile-optimized designs for on-the-go dining</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 7 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Fine Dining</h3>
+                        <p class="text-gray-600 mb-4">Elegant, sophisticated websites for high-end establishments</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 8 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Casual Eats</h3>
+                        <p class="text-gray-600 mb-4">Modern, approachable designs for everyday dining</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 9 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Fast Casual</h3>
+                        <p class="text-gray-600 mb-4">Efficient, mobile-first experiences for quick service</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 10 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Bakery</h3>
+                        <p class="text-gray-600 mb-4">Warm, inviting designs for artisanal bakeries and cafes</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 11 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Bar & Lounge</h3>
+                        <p class="text-gray-600 mb-4">Sophisticated designs for nightlife and cocktail experiences</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                    
+                    <!-- Portfolio Card 12 -->
+                    <div class="card-hover card-hover-3d bg-white rounded-lg p-8 shadow-sm border border-gray-100">
+                        <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-6"></div>
+                        <h3 class="font-serif text-2xl font-bold mb-3">Food Truck</h3>
+                        <p class="text-gray-600 mb-4">Dynamic, mobile-optimized designs for on-the-go dining</p>
+                        <div class="w-full h-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="py-20 bg-white noise-texture">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 section-reveal">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold mb-4">Customer Reviews</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Hear what our valued customers have to say about their dining experiences</p>
+            </div>
+            
+            <div class="reviews-container">
+                <!-- Review 1 -->
+                <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">JD</div>
+                        <div class="review-info">
+                            <div class="review-name">John Doe</div>
+                            <div class="review-date">2 days ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">Absolutely incredible dining experience! The service was impeccable and the food was beyond expectations. Every dish was a work of art.</p>
+                </div>
+                
+                <!-- Review 2 -->
+                <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">SJ</div>
+                        <div class="review-info">
+                            <div class="review-name">Sarah Johnson</div>
+                            <div class="review-date">1 week ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">The ambiance was perfect for our anniversary dinner. The chef's tasting menu was extraordinary with unique flavor combinations.</p>
+                </div>
+                
+                <!-- Review 3 -->
+                <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">MR</div>
+                        <div class="review-info">
+                            <div class="review-name">Michael Roberts</div>
+                            <div class="review-date">3 days ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">Outstanding service from start to finish. The wine pairing suggestions were spot on and enhanced the entire meal experience.</p>
+                </div>
+                
+                <!-- Review 4 -->
+                <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">EP</div>
+                        <div class="review-info">
+                            <div class="review-name">Emily Parker</div>
+                            <div class="review-date">5 days ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">The attention to detail was remarkable. From the presentation to the taste, everything was executed perfectly. Highly recommended!</p>
+                </div>
+                
+                <!-- Review 5 -->
+                <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">DT</div>
+                        <div class="review-info">
+                            <div class="review-name">David Thompson</div>
+                            <div class="review-date">1 week ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">An unforgettable culinary journey. The innovative dishes and exceptional service made for a truly memorable evening.</p>
+                </div>
+                
+                <!-- Review 6 -->
+                <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">LM</div>
+                        <div class="review-info">
+                            <div class="review-name">Lisa Martinez</div>
+                            <div class="review-date">4 days ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">The staff went above and beyond to make our special occasion perfect. The food quality and presentation were exceptional.</p>
+                </div>
+                
+                <!-- Review 7 -->
+                <!-- <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">RW</div>
+                        <div class="review-info">
+                            <div class="review-name">Robert Wilson</div>
+                            <div class="review-date">2 weeks ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">The chef's passion for quality ingredients shines through in every dish. A true culinary masterpiece from start to finish.</p>
+                </div>
+                
+                <!-- Review 8 -->
+                <!-- <div class="review-card card-hover">
+                    <div class="review-header">
+                        <div class="review-avatar">AC</div>
+                        <div class="review-info">
+                            <div class="review-name">Amanda Clark</div>
+                            <div class="review-date">1 week ago</div>
+                        </div>
+                    </div>
+                    <div class="review-stars">★★★★★</div>
+                    <p class="review-text">The atmosphere was elegant yet comfortable. The sommelier's wine selections perfectly complemented each course.</p>
+                </div> --> -->
+            </div>
+
+            
+        </div>
+
+        
+    </section>
+
+    <!-- Call-to-Action Section -->
+    <section id="contact" class="py-20 bg-white noise-texture">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="font-serif text-4xl md:text-5xl font-bold mb-6 section-reveal">Ready to Transform Your Restaurant?</h2>
+            <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto section-reveal" style="transition-delay: 0.1s;">
+                Let's create a digital experience that matches your culinary excellence
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center section-reveal" style="transition-delay: 0.2s;">
+               <a href="contact.html"
+                    class="inline-block px-8 py-4 bg-accent text-white rounded-lg font-medium hover:bg-white-700 transition-all duration-400 transform hover:scale-105 shadow-lg hover:shadow-xl button-hover">
+                        Get in Touch
+                </a>
+
+                <a href="menu.html"
+                    class="inline-block px-8 py-4 border-2 border-charcoal text-charcoal rounded-lg font-medium hover:bg-charcoal hover:text-white transition-all duration-400 button-hover">
+                        View our Menu
+                </a>
+            </div>
+            
+            <div class="mt-16 grid md:grid-cols-3 gap-8 section-reveal" style="transition-delay: 0.3s;">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-accent mb-2">500+</div>
+                    <div class="text-gray-600">People Served</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-accent mb-2">99%</div>
+                    <div class="text-gray-600">Client Satisfaction</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-accent mb-2">24/7</div>
+                    <div class="text-gray-600">Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-dark-charcoal text-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-serif text-xl font-bold mb-4">RESTAURANTS</h4>
+                    <p class="text-gray-400 text-sm">Premium restaurant web solutions for exceptional dining experiences</p>
+                </div>
+                <div>
+                    <h5 class="font-bold mb-3">Services</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#home" class="hover:text-white transition-colors">Web Design</a></li>
+                        <li><a href="#restaurants" class="hover:text-white transition-colors">Reservation Systems</a></li>
+                        <li><a href="#portfolio" class="hover:text-white transition-colors">Mobile Apps</a></li>
+                        <li><a href="#reviews" class="hover:text-white transition-colors">Customer Reviews</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold mb-3">Specialties</h5>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li>Michelin Star Restaurants</li>
+                        <li>Fast Casual Chains</li>
+                        <li>Independent Establishments</li>
+                        <li>Hotel Restaurants</li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold mb-3">Contact</h5>
+                    <p class="text-sm text-gray-400">Ready to elevate your restaurant's digital presence?</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-500">
+                © 2026 Business. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Popup -->
+    <div id="mobilePopup" class="mobile-popup">
+        <div class="mobile-popup-content">
+            <button class="close-popup" onclick="closePopup()">&times;</button>
+            <h3 id="popupTitle" class="font-serif text-2xl font-bold mb-4"></h3>
+            <p id="popupDetails" class="text-gray-700"></p>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles for hero section
+        function createHeroParticles() {
+            const particlesContainer = document.getElementById('heroParticles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'hero-particle';
+                
+                // Random position
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const size = Math.random() * 3 + 1;
+                const delay = Math.random() * 8;
+                
+                particle.style.left = `${left}%`;
+                particle.style.top = `${top}%`;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('.section-reveal, .section-reveal-left, .section-reveal-right').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Observe word reveals in hero
+        document.querySelectorAll('.word-reveal').forEach(word => {
+            observer.observe(word);
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Parallax effect for motion section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroBackground = document.querySelector('.hero-background-layer');
+            const heroContent = document.querySelector('.hero-content-layer');
+            const heroForeground = document.querySelector('.hero-foreground');
+            
+            if (heroBackground) {
+                heroBackground.style.transform = `translate(${scrolled * 0.02}px, ${scrolled * 0.01}px) scale(${1 + scrolled * 0.00005})`;
+            }
+            
+            if (heroContent) {
+                heroContent.style.transform = `translateY(${scrolled * 0.08}px)`;
+            }
+            
+            if (heroForeground) {
+                heroForeground.style.transform = `translateY(${scrolled * 0.04}px) scale(${1 - scrolled * 0.00005})`;
+            }
+        });
+
+        // Add scroll event listener for navigation highlighting
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-accent');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('text-accent');
+                }
+            });
+        });
+
+        // Auto-scroll functionality for restaurant cards
+        const scrollContainer = document.querySelector('.auto-scroll-container');
+        let scrollPosition = 0;
+        let scrollDirection = 1;
+
+        function autoScroll() {
+            if (scrollContainer) {
+                const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+                
+                scrollPosition += scrollDirection * 0.3;
+                
+                if (scrollPosition >= maxScroll) {
+                    scrollDirection = -1;
+                } else if (scrollPosition <= 0) {
+                    scrollDirection = 1;
+                }
+                
+                scrollContainer.scrollTo({
+                    left: scrollPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Start auto-scroll with interval
+        setInterval(autoScroll, 80);
+
+        // Mobile popup functions
+        function openPopup(title, location, details) {
+            document.getElementById('popupTitle').textContent = title;
+            document.getElementById('popupDetails').textContent = details;
+            document.getElementById('mobilePopup').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('mobilePopup').style.display = 'none';
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('mobilePopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+
+        // Touch swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left
+                scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right
+                scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+            }
+        }
+
+        // Initialize hero animations on load
+        window.addEventListener('load', () => {
+            createHeroParticles();
+            setTimeout(() => {
+                document.querySelectorAll('.word-reveal').forEach(word => {
+                    word.classList.add('visible');
+                });
+            }, 100);
+        });
+
+        // Enhanced card hover with mouse movement for 3D effect (desktop only)
+        document.querySelectorAll('.card-hover-3d').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                if (window.innerWidth > 768) { // Only on desktop
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateY = (x - centerX) / 25;
+                    const rotateX = (centerY - y) / 25;
+                    
+                    card.style.transform = `translateY(-12px) scale(1.01) translateZ(20px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                }
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1) translateZ(0) rotateX(0) rotateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
+```
